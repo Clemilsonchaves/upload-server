@@ -6,5 +6,7 @@ const envSchema = z.object({
     DATABASE_URL: z.string().startsWith('postgresql://'),
 });
 
-
-export const env = envSchema.parse(process.env);
+export const env = {
+    DATABASE_URL: process.env.DATABASE_URL || 'postgresql://localhost:5432/defaultdb',
+    PORT: process.env.PORT ? Number(process.env.PORT) : 3333,
+} as const;
