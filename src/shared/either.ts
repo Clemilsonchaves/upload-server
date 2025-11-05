@@ -188,3 +188,12 @@ export type ApiError = {
   message: string;
   details?: unknown;
 };
+
+export function unwrapEither<T>(either: Either<unknown, T>): T {
+    if (isRight(either)) {
+        // adjust property name to match your implementation
+        // e.g. return (either as any).value
+        return (either as any).value ?? (either as any).right
+    }
+    throw new Error('Called unwrapEither on a Left')
+}
