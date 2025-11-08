@@ -1,6 +1,8 @@
 import { fastify } from "fastify";
 import { fastifyCors } from "@fastify/cors";
-import { env } from "../env.js";
+import { env } from "../../env.js";
+import { getUploadsRoute } from "./routes/get-uploads.js";
+import { uploadImageRoute } from "./routes/upload-image.js";
 
 console.log("Starting server...");
 console.log("Environment:", env);
@@ -18,12 +20,16 @@ server.get("/", async (request, reply) => {
 });
 
 server.get("/health", async (request, reply) => {
-    return { 
-        status: "OK", 
+    return {
+        status: "OK",
         timestamp: new Date().toISOString(),
         env: env.NODE_ENV
     };
 });
+
+
+server.register(uploadImageRoute);
+server.register(getUploadsRoute);
 
 const start = async () => {
     try {
