@@ -1,9 +1,14 @@
 import { db, pg } from '../../infra/db/index.js'
 import { schemas } from '../../infra/db/schemas/index.js'
-import { z } from 'zod';
+import { transform, z } from 'zod';
 import { type Either, right } from '../../shared/either.js';
+import { stringify } from 'csv-stringify'
 import { ilike } from 'drizzle-orm';
-import { SQLJsSession } from 'drizzle-orm/sql-js';
+import { pipeline } from 'node:stream/promises';
+import { uploadFileToStorage } from '@/infra/storage/upload-file-to-storage.js';
+import { PassThrough, Readable, Transform } from 'node:stream';
+import { uploads } from '@/infra/db/schemas/uploads.js';
+
 
 const exportUploadsInput = z.object({
     searchQuery: z.string().optional(),
@@ -37,12 +42,50 @@ export async function exportUploads(
 
     const cursor = pg.unsafe(sql, params as string[]).cursor(1);
 
-    const csv = ''
+    // const csv = ''
 
-    for await (const rows of cursor) {
-        console.log(rows);
-    }
-    return right({ reportUrl: '' });
+    // for await (const rows of cursor) {
+    //     console.log(rows);
+    // }
+
+    const csv = stringify({
+        delimiter: ',',
+        header: true,
+        columns: [
+            { key: 'id', header: 'ID' },
+            { key: 'name', header: 'Name' },
+            { key: 'remoteUrl', header: 'URL' },
+            { key: 'createdAt', header: 'Uploaded At' },
+        ],
+    });
+
+    const uploadToStorageStream = new PassThrough();
+
+    const convertToCSVPipeline = pipeline(
+        cursor,
+        new Transform({
+            objectMode: true,
+            transform(chunk: unknown, encoding, callback) {
+                this.push(chunk);
+                callback();
+            },
+        }),
+        csv,
+        uploadToStorageStream
+    );
+
+    const uploadToStorage = uploadFileToStorage({
+        contentType: 'text/csv',
+        folder: 'downloads',
+        fileName: `${new Date().toISOString()}-uploads.csv`,
+        contentStream: uploadToStorageStream,
+    });
+
+    const [{ url }] = await Promise.all([uploadToStorage, convertToCSVPipeline]);
+
+
+
+    return right({ reportUrl: url });
 }
 
 

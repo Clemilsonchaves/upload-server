@@ -29,6 +29,9 @@ importers:
       '@types/pg':
         specifier: ^8.15.5
         version: 8.15.5
+      csv-stringify:
+        specifier: ^6.6.0
+        version: 6.6.0
       drizzle-orm:
         specifier: ^0.44.6
         version: 0.44.6(@types/pg@8.15.5)(pg@8.16.3)(postgres@3.4.7)
@@ -1115,6 +1118,9 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  csv-stringify@6.6.0:
+    resolution: {integrity: sha512-YW32lKOmIBgbxtu3g5SaiqWNwa/9ISQt2EcgOq0+RAIFufFp9is6tqNnKahqE5kuKvrnYAzs28r+s6pXJR8Vcw==}
 
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
@@ -3153,6 +3159,8 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  csv-stringify@6.6.0: {}
 
   debug@4.4.3:
     dependencies:
